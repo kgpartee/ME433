@@ -5,6 +5,8 @@
 // run 5V
 
 #define MOTORPIN 15
+void set_servo(float angle);
+
 int main()
 {
     stdio_init_all();
@@ -23,9 +25,19 @@ int main()
 
     while (true) {
         // set index
-        int i = 0;
+        int i = 10;
+        if (i < 170){
+            set_servo(i)
+        }
+        else {
+            i = 10
+        }
         // loop through degree values in set servo function
     }
 }
 
+void set_servo(float angle){
+    int level = (5 + ((angle - 10) * 5 / 160)) / 100;
+    pwm_set_gpio_level(MOTORPIN, 60000 * level); // set the duty cycle to 50%
+}
 // write set servo with pwm, convert angle to wrap number for percent duty cycle 
