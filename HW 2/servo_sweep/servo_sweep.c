@@ -26,11 +26,22 @@ int main()
     while (true) {
         // set index
         int i = 10;
-        if (i < 170){
-            set_servo(i)
+        int j = 0;
+        if (j < 160){
+            set_servo(i);
+            i++;
+            j++;
+            sleep_ms(10);
+        }
+        else if (j < 320){
+            set_servo(i);
+            i--;
+            j++;
+            sleep_ms(10);
         }
         else {
-            i = 10
+            j = 0;
+            i = 10; 
         }
         // loop through degree values in set servo function
     }
