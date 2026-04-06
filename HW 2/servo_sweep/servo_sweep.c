@@ -49,7 +49,7 @@ int main()
 }
 
 void set_servo(float angle){
-    float level = (2.5 + ((angle - 10) * 10 / 160)) / 100;
+    float level = (2 + ((angle - 10) * 14 / 160)) / 100;
     printf("%f\r\n", level);
     pwm_set_gpio_level(MOTORPIN, 60000 * level); // set the duty cycle to 50%
 }
