@@ -26,7 +26,7 @@ int main()
     while (true) {
         // set index
         int i = 10;
-        int j = 0;
+        for (int j = 0; j <= 320; j++){
         if (j < 160){
             set_servo(i);
             i++;
@@ -43,12 +43,14 @@ int main()
             j = 0;
             i = 10; 
         }
+    }
         // loop through degree values in set servo function
     }
 }
 
 void set_servo(float angle){
-    int level = (5 + ((angle - 10) * 5 / 160)) / 100;
+    float level = (5 + ((angle - 10) * 5 / 160)) / 100;
+    printf("%f\r\n", level);
     pwm_set_gpio_level(MOTORPIN, 60000 * level); // set the duty cycle to 50%
 }
 // write set servo with pwm, convert angle to wrap number for percent duty cycle 
