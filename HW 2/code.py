@@ -1,18 +1,22 @@
 import board
-import pwmio # get access to PWM
+import pwmio
 import time
 
-# control GP14 with PWM
-motor = pwmio.PWMOut(board.GP15, variable_frequency=True)
-motor.frequency = 500 # in hz
-motor.duty_cycle = 0 # initially off, at 16bit number so max on is 65535
+# there are other libraries for controlling RC servo motors
+# but really all you need is PWM at 50Hz
+servo = pwmio.PWMOut(board.GP16, variable_frequency=True)
+servo.frequency = 50 # hz
 
 while True:
-    # start duty cycle at 0, every loop increase by 100 
-    # until getting to the max of 65535
-    for i in range(0, 65535, 100):
-        motor.duty_cycle = i
-        time.sleep(0.01)
-    for i in range(0, 65535, 100):
-        motor.duty_cycle = 65535 - i
-        time.sleep(0.01)
+    # pulse 0.5 ms to 2.5 ms out of a possible 20 ms (50Hz)
+    # for 0 degrees to 180 degrees
+    # so duty_cycle can be 65535*0.5/20 to 65535*2.5/20
+    # but check this, some servo brands might only want 1-2 ms
+    
+    # command the servo to move from 0 to 180 degrees 
+    for i in range(int(65535*0.5/20), int(65535*2.5/20), 100):
+        servo.duty_cycle = i
+        time.sleep(0.1)
+    for j in range(int(65535*0.5/20), int(65535*2.5/20), 100):
+        servo.duty_cycle = int(65535*2.5/20) - j
+        time.sleep(0.1)
