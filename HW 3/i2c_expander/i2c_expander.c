@@ -37,10 +37,17 @@ int main()
     // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
 
     while (true) {
-        setPin(7, 1);
-        sleep_ms(500);
-        setPin(7, 0);
-        sleep_ms(500);
+        uint8_t buttonval = readPin(0);
+        if (buttonval == 1){
+            setPin(7, 1);
+            sleep_ms(50);
+            
+        }
+        else if (buttonval == 0){
+            setPin(7, 0);
+            sleep_ms(50);
+        }
+
         // writing : i2c_write_blocking(i2c_default, ADDR, buf, 2, false);
         // reading: i2c_write_blocking(i2c_default, ADDR, &reg, 1, true);  // true to keep host control of bus
         //          i2c_read_blocking(i2c_default, ADDR, &buf, 1, false);  // false - finished with bus
