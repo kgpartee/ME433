@@ -13,17 +13,17 @@
 #define BUTTON 0 // on expander
 #define ERROR 16
 
-#define IODIR 0x00
-#define GPIO 0x09
-#define OLAT 0x0A
-#define PINMASK 011111111
-#define CHIPADDR 0100000
+uint8_t IODIR = 0x00;
+uint8_t GPIO = 0x09;
+uint8_t OLAT = 0x0A;
+uint8_t PINMASK = 0b01111111;
+uint8_t CHIPADDR = 0b0100000;
 
 
 // step 1: make LED blink
 // step 2: read button
 // step 3: read from button to control LED 
-void setPin(uint16_t pinaddr, char value); // sets value of pin
+void setPin(uint16_t pinaddr, uint8_t value); // sets value of pin
 uint8_t readPin(int pinnum);
 void initExpander();
 void initI2C();
@@ -37,15 +37,17 @@ int main()
     // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
 
     while (true) {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
+        setPin(7, 1);
+        sleep_ms(500);
+        setPin(7, 0);
+        sleep_ms(500);
         // writing : i2c_write_blocking(i2c_default, ADDR, buf, 2, false);
         // reading: i2c_write_blocking(i2c_default, ADDR, &reg, 1, true);  // true to keep host control of bus
         //          i2c_read_blocking(i2c_default, ADDR, &buf, 1, false);  // false - finished with bus
     }
 }
 
-void setPin(uint16_t pinaddr, char value) {
+void setPin(uint16_t pinaddr, uint8_t value) {
     uint8_t buf[2] = {OLAT, 0x00};
     if(value != 0){
         buf[1] = 00000001<<pinaddr;
@@ -55,7 +57,7 @@ void setPin(uint16_t pinaddr, char value) {
 
 uint8_t readPin(int pinnum){
     uint8_t buf = 0; 
-    i2c_write_blocking(i2c_default, CHIPADDR, GPIO, 1, true);  // true to keep host control of bus
+    i2c_write_blocking(i2c_default, CHIPADDR, &GPIO, 1, true);  // true to keep host control of bus
     i2c_read_blocking(i2c_default, CHIPADDR, &buf, 1, false);  // false - finished with bus
     return (buf>>pinnum)&1;
 }
