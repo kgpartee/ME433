@@ -23,8 +23,8 @@
 // step 1: make LED blink
 // step 2: read button
 // step 3: read from button to control LED 
-void setPin(uint16_t pinaddr, uint16_t reg, char value); // sets value of pin
-uint8_t readPin(int pinnum, uint16_t reg);
+void setPin(uint16_t pinaddr, char value); // sets value of pin
+uint8_t readPin(int pinnum);
 void initExpander();
 void initI2C();
 
@@ -45,13 +45,17 @@ int main()
     }
 }
 
-void setPin(uint16_t pinaddr, uint16_t reg, char value) {
-    // set in olat
+void setPin(uint16_t pinaddr, char value) {
+    uint8_t buf[2] = {OLAT, 0x00};
+    if(value != 0){
+        buf[1] = 00000001<<pinaddr;
+    }
+    i2c_write_blocking(i2c_default, CHIPADDR, buf, 2, false);
 }
 
-uint8_t readPin(int pinnum, uint16_t reg){
+uint8_t readPin(int pinnum){
     uint8_t buf = 0; 
-    i2c_write_blocking(i2c_default, CHIPADDR, &reg, 1, true);  // true to keep host control of bus
+    i2c_write_blocking(i2c_default, CHIPADDR, GPIO, 1, true);  // true to keep host control of bus
     i2c_read_blocking(i2c_default, CHIPADDR, &buf, 1, false);  // false - finished with bus
     return (buf>>pinnum)&1;
 }
