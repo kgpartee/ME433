@@ -35,14 +35,14 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(oled_display oled_display.c )
+add_executable(oled_display oled_display.c ssd1306.c display.c)
 
 pico_set_program_name(oled_display "oled_display")
 pico_set_program_version(oled_display "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(oled_display 0)
-pico_enable_stdio_usb(oled_display 0)
+pico_enable_stdio_usb(oled_display 1)
 
 # Add the standard library to the build
 target_link_libraries(oled_display
