@@ -39,12 +39,18 @@ int main()
         // clear
         // pixel on 
         // pixel off 
- 
+        unsigned int start = to_us_since_boot(get_absolute_time());
         int i = 15;
         char message[50]; 
-        sprintf(message, "my var = %d", i); 
-    
-        drawMessage(20,10,message);
+        sprintf(message, "bignumberreallybig%d", 12345678); 
+        drawMessage(0,0,message);
+        drawMessage(0,8, message);
+        drawMessage(0,16, message);
+        drawMessage(0, 24, message);
+        ssd1306_update();
+        unsigned int end = to_us_since_boot(get_absolute_time());
+        sprintf(message, "fps: %f", (end-start)/1000.0);
+        drawMessage(0, 24, message);
         ssd1306_update();
         gpio_put(16, 1);
         sleep_ms(1000);
