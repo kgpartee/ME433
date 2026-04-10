@@ -16,54 +16,28 @@
 int main()
 {
     stdio_init_all();
-
-    // I2C Initialisation. Using it at 400Khz.
-    i2c_init(I2C_PORT, 400*1000);
+    ssd1306_setup();
+    // I2C Initialisation. Using it at 1700Khz.
+    i2c_init(I2C_PORT, 1700*1000);
     
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C_SDA);
-    gpio_pull_up(I2C_SCL);
+
+    gpio_init(16);
+    gpio_set_dir(16, GPIO_OUT);
+
     // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
 
     while (true) {
         // clear
         // pixel on 
         // pixel off 
-
+        ssd1306_drawPixel(10, 10, 1);
+        gpio_put(16, 1);
+        sleep_ms(1000);
+        ssd1306_drawPixel(10, 10, 0);
+        gpio_put(16, 0);
         sleep_ms(1000);
     }
 }
 
-
-// move to display. and display.h
-// copy i2c init
-//copy / generalize the 
-void drawMessage(uint8_t x, uint8_t y, char* message){
-    // loop through each char of message until null character is hit
-    // draw each letter
-    // offset x nad y, check to see if next row is hit 
-    int i = 0;
-    while(message[i] !=0){
-        for (int j = 0; j < 10; j++){
-            drawLetter(message[i], x+i*5, y+j*8);
-            i++;
-        }
-
-    }
-
-}
-
-void drawLetter(uint8_t x, uint8_t y, char letter){
-    for(int i=0; i<=4; i++){
-        char col = ASCII(letter - 0x20)(i);
-        for(int j = 0; j<=7; j++){
-            if ((col>>j) &0b1== 0b1){
-                ssd1306_drawPixel(x+i, y+j, 1);
-            }
-            else{ 
-                ssd1306_drawPixel(x+i, y+j, 0);
-            }
-        }
-    }
-}

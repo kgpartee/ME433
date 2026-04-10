@@ -19,7 +19,7 @@ void drawMessage(uint8_t x, uint8_t y, char* message){
 
 void drawLetter(uint8_t x, uint8_t y, char letter){
     for(int i=0; i<=4; i++){
-        char col = ASCII(letter - 0x20)(i);
+        char col = ASCII[letter - 0x20][i];
         for(int j = 0; j<=7; j++){
             if ((col>>j) &0b1== 0b1){
                 ssd1306_drawPixel(x+i, y+j, 1);
