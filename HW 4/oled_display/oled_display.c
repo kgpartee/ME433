@@ -40,13 +40,15 @@ int main()
         // pixel on 
         // pixel off 
  
-        ssd1306_drawPixel(10, 10, 1);
+        int i = 15;
+        char message[50]; 
+        sprintf(message, "my var = %d", i); 
+    
+        drawMessage(20,10,message);
         ssd1306_update();
         gpio_put(16, 1);
         sleep_ms(1000);
 
-        ssd1306_drawPixel(10, 10, 0);
-        ssd1306_update();
         gpio_put(16, 0);
         sleep_ms(1000);
     }

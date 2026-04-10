@@ -8,10 +8,9 @@ void drawMessage(uint8_t x, uint8_t y, char* message){
     // offset x nad y, check to see if next row is hit 
     int i = 0;
     while(message[i] !=0){
-        for (int j = 0; j < 10; j++){
-            drawLetter(message[i], x+i*5, y+j*8);
+            drawLetter(x+i*5, y, message[i]);
             i++;
-        }
+
 
     }
 
