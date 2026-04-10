@@ -15,27 +15,38 @@
 
 int main()
 {
+    
     stdio_init_all();
-    ssd1306_setup();
+
+
     // I2C Initialisation. Using it at 1700Khz.
     i2c_init(I2C_PORT, 1700*1000);
     
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
 
+
+
+    ssd1306_setup();
+
+
     gpio_init(16);
     gpio_set_dir(16, GPIO_OUT);
 
     // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
-
+    
     while (true) {
         // clear
         // pixel on 
         // pixel off 
+ 
         ssd1306_drawPixel(10, 10, 1);
+        ssd1306_update();
         gpio_put(16, 1);
         sleep_ms(1000);
+
         ssd1306_drawPixel(10, 10, 0);
+        ssd1306_update();
         gpio_put(16, 0);
         sleep_ms(1000);
     }

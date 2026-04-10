@@ -5,6 +5,7 @@
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 
+
 unsigned char SSD1306_ADDRESS = 0b0111100; // 7bit i2c address
 unsigned char ssd1306_buffer[513]; // 128x32/8. Every bit is a pixel except first byte
 
@@ -15,8 +16,10 @@ void ssd1306_setup() {
     //_CP0_SET_COUNT(0);
     //while (_CP0_GET_COUNT() < 48000000 / 2 / 50) {
     //}
+
     sleep_ms(20);
     ssd1306_command(SSD1306_DISPLAYOFF);
+
     ssd1306_command(SSD1306_SETDISPLAYCLOCKDIV);
     ssd1306_command(0x80);
     ssd1306_command(SSD1306_SETMULTIPLEX);
@@ -28,6 +31,7 @@ void ssd1306_setup() {
     ssd1306_command(0x14);
     ssd1306_command(SSD1306_MEMORYMODE);
     ssd1306_command(0x00);
+
     ssd1306_command(SSD1306_SEGREMAP | 0x1);
     ssd1306_command(SSD1306_COMSCANDEC);
     ssd1306_command(SSD1306_SETCOMPINS);
@@ -41,6 +45,7 @@ void ssd1306_setup() {
     ssd1306_command(SSD1306_DISPLAYON);
     ssd1306_clear();
     ssd1306_update();
+  
 }
 
 // send a command instruction (not pixel data)
