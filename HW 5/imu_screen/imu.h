@@ -24,6 +24,6 @@
 #define GYRO_YOUT_L  0x46
 #define GYRO_ZOUT_H  0x47
 #define GYRO_ZOUT_L  0x48
-#define WHO_AM_I     0x75
+
 
 void imu_init();
