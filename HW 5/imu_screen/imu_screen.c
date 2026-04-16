@@ -22,23 +22,25 @@ int main()
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
 
     ssd1306_setup();
+    imu_init();
     gpio_init(16);
     gpio_set_dir(16, GPIO_OUT);
-    uint8_t buf = 0;
+    
+     
 
-    i2c_write_blocking(i2c_default, IMU_ADDR, &WHO_AM_I, 1, true);  // true to keep host control of bus
-    i2c_read_blocking(i2c_default, IMU_ADDR, &buf, 1, false);  // false - finished with bus
+    while(true){
+        uint8_t buf[14];
+        int16_t data[7];
+        read_data(ACCEL_XOUT_H, buf);
+        recombination(buf, data);
+        // printf("accel = (%d, %d, %d)\r\n temp = %d \r\n gyro = (%d, %d, %d)\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
+        
+        num_to_line(data[0], data[1]);
+        // for (int i = 1; i <+14; i++){
+        //     printf("%d: %d\n", i, buf[i]);
+        // }
+       
+    }
 
-    if (buf == 0x68 || buf == 0x98){
-        sleep_ms(10000);
-        printf("buf = %d\n", buf);
-    }
-    else{
-        while(true){
-            gpio_put(16, 1);
-            sleep_ms(1000);
-            gpio_put(16, 0);
-            sleep_ms(1000);
-        }
-    }
+    
 }
