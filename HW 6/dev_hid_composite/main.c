@@ -27,10 +27,15 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "hardware/gpio.h"
+
 #include "bsp/board_api.h"
 #include "tusb.h"
 
 #include "usb_descriptors.h"
+
+// #include "imu.h"
+#include "math.h"
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -49,8 +54,18 @@ enum  {
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
+bool mode = 0; 
+
 void led_blinking_task(void);
 void hid_task(void);
+
+// set up button 
+// mode var 
+// check button each poll - if button pressed, change mode var
+// if/else statement in mouse code 
+// read /scale accel data (maps to +- 128)
+// create ranges so that further tilt is faster motion (bigger delta)
+// set sin(time since start) to move in small circle for delta 
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -64,8 +79,20 @@ int main(void)
     board_init_after_tusb();
   }
 
+  gpio_init(16);
+  gpio_set_dir(16, GPIO_OUT);
+
+
+  gpio_init(17);
+  gpio_set_dir(17, GPIO_IN);
+
   while (1)
   {
+    if(gpio_get(17) == 1){
+      mode = !mode; 
+    }
+
+
     tud_task(); // tinyusb device task
     led_blinking_task();
 
@@ -138,10 +165,56 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
     case REPORT_ID_MOUSE:
     {
-      int8_t const delta = 5;
+      // EDIT HERE !! 
+      static int8_t  deltax = 0;
+      static int8_t  deltay = 0; 
+
+      
+      static int time = 0; 
+      static int direction = 0;
+      // if direction == 0 delta x = 0 delta y = 5, repeat for all. or do sine function for real circle 
+
+      if (mode == 0){ 
+        gpio_put(16, 1);
+        if (direction == 0){
+          deltax = 0;
+          deltay = 5; 
+          sleep_ms(200);
+        
+          direction++;
+        }
+        else if (direction == 1){
+          deltax = 5;
+          deltay = 0; 
+          sleep_ms(200);
+          
+          direction++;
+        }
+        else if (direction == 2){
+          deltax = 0;
+          deltay = -5; 
+          sleep_ms(200);
+          direction++;
+        }
+        else if (direction == 3){
+          deltax = -5;
+          deltay = 0; 
+          sleep_ms(200);
+          direction++;
+        }
+        else if (direction == 4 ){
+          direction = 0; 
+        }
+
+      }
+
+      else if(mode == 1){
+         
+      }
 
       // no button, right + down, no scroll, no pan
-      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, delta, delta, 0, 0);
+      tud_hid_mouse_report(REPORT_ID_MOUSE, 0x00, deltax, deltay, 0, 0);
+      
     }
     break;
 

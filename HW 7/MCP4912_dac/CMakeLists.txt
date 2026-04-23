@@ -28,33 +28,30 @@ set(PICO_BOARD pico2 CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(dev_hid_composite C CXX ASM)
+project(MCP4912_dac C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-cmake_minimum_required(VERSION 3.13)
+add_executable(MCP4912_dac MCP4912_dac.c )
 
-add_executable(dev_hid_composite)
+pico_set_program_name(MCP4912_dac "MCP4912_dac")
+pico_set_program_version(MCP4912_dac "0.1")
 
-target_sources(dev_hid_composite PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}/main.c
-        ${CMAKE_CURRENT_LIST_DIR}/usb_descriptors.c
-        )
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart(MCP4912_dac 0)
+pico_enable_stdio_usb(MCP4912_dac 0)
 
-# Make sure TinyUSB can find tusb_config.h
-target_include_directories(dev_hid_composite PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR})
+# Add the standard library to the build
+target_link_libraries(MCP4912_dac
+        pico_stdlib)
 
-# In addition to pico_stdlib required for common PicoSDK functionality, add dependency on tinyusb_device
-# for TinyUSB device support and tinyusb_board for the additional board support library used by the example
-target_link_libraries(dev_hid_composite PUBLIC pico_stdlib pico_unique_id tinyusb_device tinyusb_board hardware_gpio)
+# Add the standard include files to the build
+target_include_directories(MCP4912_dac PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+)
 
-# Uncomment this line to enable fix for Errata RP2040-E5 (the fix requires use of GPIO 15)
-#target_compile_definitions(dev_hid_composite PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
+pico_add_extra_outputs(MCP4912_dac)
 
-pico_add_extra_outputs(dev_hid_composite)
-
-# add url via pico_set_program_url
