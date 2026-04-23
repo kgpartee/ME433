@@ -34,7 +34,7 @@
 
 #include "usb_descriptors.h"
 
-// #include "imu.h"
+#include "imu.h"
 #include "math.h"
 
 //--------------------------------------------------------------------+
@@ -71,7 +71,7 @@ void hid_task(void);
 int main(void)
 {
   board_init();
-
+  imu_init();
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
 
@@ -174,7 +174,7 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       static int direction = 0;
       // if direction == 0 delta x = 0 delta y = 5, repeat for all. or do sine function for real circle 
 
-      if (mode == 0){ 
+      if (mode){ 
         gpio_put(16, 1);
         if (direction == 0){
           deltax = 0;
@@ -208,8 +208,14 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
 
       }
 
-      else if(mode == 1){
-         
+      else{
+        gpio_put(16, 0);
+        uint8_t buf[14];
+        uint16_t data[7];
+        read_data(ACCEL_XOUT_H, buf);
+        recombination(buf, data);
+        deltax = data[0]/800;
+        deltay = data[1]/800;
       }
 
       // no button, right + down, no scroll, no pan

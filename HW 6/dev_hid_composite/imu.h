@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-#include "ssd1306.h"
-#include "display.h"
+// #include "ssd1306.h"
+// #include "display.h"
 
 #define IMU_ADDR 0b1101000
 
