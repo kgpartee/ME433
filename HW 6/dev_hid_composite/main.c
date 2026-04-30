@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "hardware/gpio.h"
+#include "hardware/i2c.h"
 
 #include "bsp/board_api.h"
 #include "tusb.h"
@@ -56,6 +57,11 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 bool mode = 0; 
 
+#define I2C_PORT i2c0
+#define I2C_SDA 8
+#define I2C_SCL 9
+
+
 void led_blinking_task(void);
 void hid_task(void);
 
@@ -71,6 +77,13 @@ void hid_task(void);
 int main(void)
 {
   board_init();
+
+      // I2C Initialisation. Using it at 1700Khz.
+    i2c_init(I2C_PORT, 1700*1000);
+    
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+
   imu_init();
   // init device stack on configured roothub port
   tud_init(BOARD_TUD_RHPORT);
@@ -82,14 +95,17 @@ int main(void)
   gpio_init(16);
   gpio_set_dir(16, GPIO_OUT);
 
+  gpio_put(16,0);
 
   gpio_init(17);
   gpio_set_dir(17, GPIO_IN);
 
   while (1)
   {
-    if(gpio_get(17) == 1){
+    int button = gpio_get(17);
+    if(button == 1){
       mode = !mode; 
+      gpio_put(16, mode);
     }
 
 
@@ -175,31 +191,31 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       // if direction == 0 delta x = 0 delta y = 5, repeat for all. or do sine function for real circle 
 
       if (mode){ 
-        gpio_put(16, 1);
+        
         if (direction == 0){
           deltax = 0;
           deltay = 5; 
-          sleep_ms(200);
+          sleep_ms(100);
         
           direction++;
         }
         else if (direction == 1){
           deltax = 5;
           deltay = 0; 
-          sleep_ms(200);
+          sleep_ms(100);
           
           direction++;
         }
         else if (direction == 2){
           deltax = 0;
           deltay = -5; 
-          sleep_ms(200);
+          sleep_ms(100);
           direction++;
         }
         else if (direction == 3){
           deltax = -5;
           deltay = 0; 
-          sleep_ms(200);
+          sleep_ms(100);
           direction++;
         }
         else if (direction == 4 ){
@@ -209,13 +225,42 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
       }
 
       else{
-        gpio_put(16, 0);
+        
         uint8_t buf[14];
         uint16_t data[7];
         read_data(ACCEL_XOUT_H, buf);
         recombination(buf, data);
-        deltax = data[0]/800;
-        deltay = data[1]/800;
+        if (buf[0] < 200){
+          deltax = 0;
+        }
+        else if(buf[0] < 3000 && buf[0] > 200){
+          deltax = 3;
+        }
+        else if(buf[0] < 6000 && buf[0]> 3000){
+          deltax = 5;
+        }
+        else if(buf[0] < 10000 && buf[0]>6000){
+          deltax = 8;
+        }
+        else if(buf[0] < 17000 && buf[0]>10000){
+          deltax = 12;
+        } 
+        if (buf[1] < 200){
+          deltay = 0;
+        }
+        else if(buf[1] < 3000 && buf[1] > 200){
+          deltay = 3;
+        }
+        else if(buf[1] < 6000 && buf[1]> 3000){
+          deltay = 5;
+        }
+        else if(buf[1] < 10000 && buf[1]>6000){
+          deltay = 8;
+        }
+        else if(buf[1] < 17000 && buf[1]>10000){
+          deltay = 12;
+        } 
+        
       }
 
       // no button, right + down, no scroll, no pan

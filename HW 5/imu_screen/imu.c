@@ -21,10 +21,10 @@ void recombination(uint8_t* buf, int16_t* data){
     for (int ii = 0; ii < 14; ii+=2){
         placeholder = 0; 
         placeholder = buf[ii]<<8;
-       // printf("placeholder:%d OR %d\n", placeholder, buf[ii+1]);
+       printf("placeholder:%d OR %d\n", placeholder, buf[ii+1]);
         // THE PROBLEM IS HERE
         data[ii/2] = placeholder|buf[ii+1];
-        //printf("data[%d] = %d\n", ii/2, data[ii/2]);
+        printf("data[%d] = %d\n", ii/2, data[ii/2]);
     }
     //fix units
     // data[0] = data[0]*0.000061;

@@ -33,7 +33,7 @@ int main()
         int16_t data[7];
         read_data(ACCEL_XOUT_H, buf);
         recombination(buf, data);
-        // printf("accel = (%d, %d, %d)\r\n temp = %d \r\n gyro = (%d, %d, %d)\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
+        printf("accel = (%d, %d, %d)\r\n temp = %d \r\n gyro = (%d, %d, %d)\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
         
         num_to_line(data[0], data[1]);
         // for (int i = 1; i <+14; i++){
