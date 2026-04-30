@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "hardware/adc.h"
 
 #define BUTTONPIN 2
 #define POTPIN
@@ -24,6 +25,8 @@ int main()
     
         // print output
 
-        printf("(%d,%d)", jump, turn);
+        printf("(%d,%d)\n", jump, turn);
+
+        sleep_ms(1000/20);
     }
 }

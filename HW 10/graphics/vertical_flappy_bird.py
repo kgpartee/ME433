@@ -3,7 +3,7 @@ import pgzrun
 import pygame
 import serial
 
-ser = serial.Serial('COM6') # the name of your port here
+ser = serial.Serial('COM6', 230400) # the name of your port here
 print('Opening port: ' + str(ser.name))
 
 import random
@@ -12,7 +12,7 @@ WIDTH = 400
 HEIGHT = 600
 n1_int = 0
 n2_int = 0
-
+jumping = False; 
 # -----------------------------
 # INPUT ABSTRACTION LAYER
 # -----------------------------
@@ -32,17 +32,36 @@ def get_serial_data():
 
 def get_jump_input():
     """Return True when the player should jump."""
+    jumping = False
 
-    return n1_int
+def get_jump_input():
+    global jumping, n1_int
+
+    # rising edge
+    if n1_int == 1 and not jumping:
+        jumping = True
+        return True
+
+    # held
+    if n1_int == 1 and jumping:
+        return False
+
+    # released
+    if n1_int == 0 and jumping:
+        jumping = False
+
+    return False
+
 
 def get_horizontal_input():
     """
     Return -1 for left, +1 for right, 0 for no movement.
     Replace this with API input later.
     """
-    if n2_int < 2056:
+    global n2_int
+    if n2_int > 3000:
         return -1
-    if n2_int > 2056:
+    if n2_int < 1500:
         return 1
     return 0
 
