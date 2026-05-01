@@ -16,4 +16,4 @@ with open('sigA.csv') as f:
 for i in range(len(t)):
     # print the data to verify it was read
     print(str(t[i]) + ", " + str(data1[i]))
-    
+   
