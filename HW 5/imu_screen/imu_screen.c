@@ -15,24 +15,33 @@ uint8_t WHO_AM_I = 0x75;
 int main()
 {
     stdio_init_all();
+    sleep_ms(10000);
     // I2C Initialisation. Using it at 1700Khz.
+    printf("init all\n");
     i2c_init(I2C_PORT, 1700*1000);
     
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
 
-    ssd1306_setup();
+    printf("init i2c\n");
+    // ssd1306_setup();
     imu_init();
     gpio_init(16);
     gpio_set_dir(16, GPIO_OUT);
+
+    printf("init everything else\n");
     
      
 
     while(true){
+        // char message[10] = "in loop";
+        // drawMessage(10, 10, message);
+        // ssd1306_update();
         uint8_t buf[14];
         int16_t data[7];
         read_data(ACCEL_XOUT_H, buf);
         recombination(buf, data);
+        
         printf("accel = (%d, %d, %d)\r\n temp = %d \r\n gyro = (%d, %d, %d)\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
         
         num_to_line(data[0], data[1]);
