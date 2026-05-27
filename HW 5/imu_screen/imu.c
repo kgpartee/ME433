@@ -5,19 +5,19 @@ void imu_init(){
     uint8_t pwrbuf[2] = {PWR_MGMT_1, 0x00};
     uint8_t accelbuf[2] = {ACCEL_CONFIG, 0x00}; // set value to 0 to select 2g mode
     uint8_t gyrobuf[2] = {GYRO_CONFIG, 0x03}; // set value to 3 to select 2000 dps mode
-    printf("stored buffers\n");
+    //printf("stored buffers\n");
     i2c_write_blocking(i2c_default, IMU_ADDR, pwrbuf, 1, true);
     i2c_write_blocking(i2c_default, IMU_ADDR, accelbuf, 1, true);
     i2c_write_blocking(i2c_default, IMU_ADDR, gyrobuf, 1, true);
-    printf("wrote to buffer");
+    //printf("wrote to buffer");
 }
 
 void read_data(uint8_t addr, uint8_t* buf){ 
     i2c_write_blocking(i2c_default, IMU_ADDR, &addr, 1, true);  // true to keep host control of bus
     //for (int ii = 0; ii < 14; ii++){
         i2c_read_blocking(i2c_default, IMU_ADDR, buf, 14, false);
-    printf("data read\n");
-    printf("%d, %d, %d, %d\n", buf[0], buf[1], buf[2], buf[3]);
+   // printf("data read\n");
+   // printf("%d, %d, %d, %d\n", buf[0], buf[1], buf[2], buf[3]);
 }
 
 void recombination(uint8_t* buf, int16_t* data){
@@ -25,10 +25,10 @@ void recombination(uint8_t* buf, int16_t* data){
     for (int ii = 0; ii < 14; ii+=2){
         placeholder = 0; 
         placeholder = buf[ii]<<8;
-       printf("placeholder:%d OR %d\n", placeholder, buf[ii+1]);
+      // printf("placeholder:%d OR %d\n", placeholder, buf[ii+1]);
         // THE PROBLEM IS HERE
         data[ii/2] = placeholder|buf[ii+1];
-        printf("data[%d] = %d\n", ii/2, data[ii/2]);
+        // printf("data[%d] = %d\n", ii/2, data[ii/2]);
     }
     //fix units
     // data[0] = data[0]*0.000061;

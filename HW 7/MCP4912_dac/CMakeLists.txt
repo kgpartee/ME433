@@ -46,7 +46,8 @@ pico_enable_stdio_usb(MCP4912_dac 0)
 
 # Add the standard library to the build
 target_link_libraries(MCP4912_dac
-        pico_stdlib)
+        pico_stdlib
+        hardware_spi)
 
 # Add the standard include files to the build
 target_include_directories(MCP4912_dac PRIVATE

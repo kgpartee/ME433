@@ -17,7 +17,7 @@
 int main()
 {
     stdio_init_all();
-
+    sleep_ms(5000);
     // Set up our UART
     uart_init(UART_ID, BAUD_RATE);
     // Set the TX and RX pins by using the function select on the GPIO
@@ -26,15 +26,29 @@ int main()
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
     
     // Use some the various UART functions to send out data
-    // In a default system, printf will also output via the default UART
-    
-    // Send out a string, with CR/LF conversions
-    uart_puts(UART_ID, " Hello, UART!\n");
+    // In a default system, printf will also output via the default stdio (USB/UART0)
     
     // For more examples of UART use see https://github.com/raspberrypi/pico-examples/tree/master/uart
+    char rx_data[100];
 
     while (true) {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
+        uart_puts(UART_ID, "100\n");
+        printf("uart sent\n");
+        int i = 0;
+        while (uart_is_readable(UART_ID)) {
+            printf("in the while loop\n");
+            rx_data[i++] = uart_getc(UART_ID);
+            if (uart_getc(UART_ID) == '\n'){
+                break;
+            }
+            if (i= 100){
+                break;
+            }
+        }
+        printf("out of the loop\n");
+        rx_data[i] = '\0';
+        printf("Received on UART1: %s\n", rx_data);
+       
+        
     }
 }

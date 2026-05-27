@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "hardware/spi.h"
+#include "math.h"
 //add math.h
 // init spi
 //.include command function
@@ -22,10 +24,18 @@ void write_voltage(int channel, unsigned short voltage);
 int main()
 {
 
-    or make tabel with 100 values where we precalculate sine values and just loop through table 
+    //or make tabel with 100 values where we precalculate sine values and just loop through table 
+    
+    stdio_init_all();
+    spi_init(spi_default, 1000 * 1000); // the baud, or bits per second
+    gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
+    for(int i = 0; i < 100; i++){
+
+    }
     float t = 0; 
     t = t+0.01; 
-    stdio_init_all();
     float voltageA = 3.3/2*(sine(2*pi*f*t)+1);
     while (true) {
         // update dac

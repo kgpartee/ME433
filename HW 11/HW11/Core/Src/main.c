@@ -120,11 +120,53 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  uint8_t tx_data[] = "Hello world!\r\n";
+//	  char m[100];
+//	  int number = 100;
+//	  sprintf(m, "%d\n", number);
 
-	  HAL_UART_Transmit(&huart1, tx_data, sizeof(tx_data), 100);
+	  char m[20];
+	  int number = 100;
+	  sprintf(m, "%d\n", number);
+	  HAL_UART_Transmit(&huart1, (uint8_t*)m, strlen(m), 10);
 
+	//  HAL_UART_Transmit(&huart1, (uint8_t*)m, strlen(m), 10);
 
+//	  char rx_data[100];
+//	  uint8_t rx_num;
+//	  char buff[1000];
+//	  int index = 0;
+
+	  char rx_data[100] = {0};
+	  int len = 0;
+
+	  // Read until newline
+	  while (1) {
+	      uint8_t c;
+	      if (HAL_UART_Receive(&huart1, &c, 1, 10) == HAL_OK) {
+	          rx_data[len++] = c;
+	          if (c == '\n') break;
+	      } else {
+	          break; // timeout
+	      }
+	  }
+//
+//	  HAL_UART_Receive(&huart1, rx_data, 100, 10);
+//	  for (int ii = 0; ii < strlen(rx_data); ii++){
+//		  if (rx_data[ii] == '\n'){
+//			  sscanf(buff, "%d", &rx_num);
+//		  }
+//		  else {
+//			  buff[index] = rx_data[ii];
+//			  index++;
+//			  if (index == 1000){
+//				  index = 0;
+//			  }
+//		  }
+//
+//	  }
+//
+
+	  printf("Received: %s\n", rx_data);
 	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

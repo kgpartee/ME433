@@ -230,6 +230,7 @@ static void send_hid_report(uint8_t report_id, uint32_t btn)
         uint16_t data[7];
         read_data(ACCEL_XOUT_H, buf);
         recombination(buf, data);
+        // printf("(%d, %d\n)", buf[0], buf[1]);
         if (buf[0] < 200){
           deltax = 0;
         }

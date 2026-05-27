@@ -1,0 +1,3 @@
+turn on adc 0 in cube mx
+turn on pwm - in timers TIM1
+enable globabl interrupt in nvic settings 
