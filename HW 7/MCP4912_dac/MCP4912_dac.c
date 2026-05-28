@@ -17,9 +17,9 @@
 // stie ldac low, tie shdw high 
 
 // first four bits we write are always 1
+#define PIN_CS 16
 
-
-void write_voltage(int channel, unsigned short voltage);
+void write_voltage(int channel, float voltage);
 
 int main()
 {
@@ -31,22 +31,59 @@ int main()
     gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
     gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
-    for(int i = 0; i < 100; i++){
 
+    gpio_init(PIN_CS); 
+    gpio_set_dir(PIN_CS, GPIO_OUT);
+
+    float voltageA[100];
+    float voltageB[200];
+    voltageB[0] = 0;
+    
+    for(int i = 0; i < 100; i++){
+        voltageA[i] = 3.3/2*(sin(2*3.14*(1/i)+1));
     }
-    float t = 0; 
-    t = t+0.01; 
-    float voltageA = 3.3/2*(sine(2*pi*f*t)+1);
+    for(int j = 1; j<100; j++){
+        
+        voltageB[j] = voltageB[j -1] + 0.033;
+    }
+    for (int j = 100; j<200; j++){
+        voltageB[j] = voltageB[j-1] - 0.033; 
+    }
+
+ 
+
     while (true) {
-        // update dac
-            //set voltage a
-            //set voltage b
-        // sleep for 0.01 s
-        //
+        write_voltage(1, 1.65);
+        
+        for(int index = 0; index < 200; index++){
+            if (index < 100){
+            
+            write_voltage(0, voltageA[index]);
+            write_voltage(1, voltageB[index]);
+            sleep_ms(5);
+        }
+        else {
+            write_voltage(0, voltageA[index - 100]);
+            write_voltage(1, voltageB[index]);
+            sleep_ms(5);
+        }
+        }
+
+
     }
 }
 
+static inline void cs_select(uint cs_pin) {
+    asm volatile("nop \n nop \n nop"); // FIXME
+    gpio_put(cs_pin, 0);
+    asm volatile("nop \n nop \n nop"); // FIXME
+}
 
+static inline void cs_deselect(uint cs_pin) {
+    asm volatile("nop \n nop \n nop"); // FIXME
+    gpio_put(cs_pin, 1);
+    asm volatile("nop \n nop \n nop"); // FIXME
+}
 // pseudo code from class:
 void write_voltage(int channel, float voltage){
     uint8_t data[2];
@@ -57,7 +94,7 @@ void write_voltage(int channel, float voltage){
     data[0] = data[0] | (volt_analog >> 6); 
     data[1] = (volt_analog<<2) & 0xFF;
     // map float to uint8 3.3 to 1023
-    sc_select(PIN_CS;
-        spi_write_blocking
-        cs_deselect
+    cs_select(PIN_CS);
+    spi_write_blocking(spi0, data, 2); // where data is a uint8_t array with length len
+    cs_deselect(PIN_CS);
 }
