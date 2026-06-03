@@ -42,7 +42,7 @@ pico_set_program_version(MCP4912_dac "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(MCP4912_dac 0)
-pico_enable_stdio_usb(MCP4912_dac 0)
+pico_enable_stdio_usb(MCP4912_dac 1)
 
 # Add the standard library to the build
 target_link_libraries(MCP4912_dac

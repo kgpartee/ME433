@@ -17,57 +17,61 @@
 // stie ldac low, tie shdw high 
 
 // first four bits we write are always 1
-#define PIN_CS 16
+#define SPI_PORT spi0
+#define PIN_MISO 16
+#define PIN_CS   17
+#define PIN_SCK  18
+#define PIN_MOSI 19
 
 void write_voltage(int channel, float voltage);
-
+void setup_spi(); 
 int main()
 {
 
     //or make tabel with 100 values where we precalculate sine values and just loop through table 
     
     stdio_init_all();
-    spi_init(spi_default, 1000 * 1000); // the baud, or bits per second
-    gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
+    setup_spi(); 
 
-    gpio_init(PIN_CS); 
     gpio_set_dir(PIN_CS, GPIO_OUT);
+    gpio_put(PIN_CS, 1);
 
     float voltageA[100];
     float voltageB[200];
     voltageB[0] = 0;
     
     for(int i = 0; i < 100; i++){
-        voltageA[i] = 3.3/2*(sin(2*3.14*(1/i)+1));
-    }
+        voltageA[i] = (sin(2*3.14*i/100)+1)*512;
+    }    
     for(int j = 1; j<100; j++){
         
-        voltageB[j] = voltageB[j -1] + 0.033;
+        voltageB[j] = voltageB[j -1] + 1.024;
     }
     for (int j = 100; j<200; j++){
-        voltageB[j] = voltageB[j-1] - 0.033; 
+        voltageB[j] = voltageB[j-1] - 1.024; 
     }
 
  
 
     while (true) {
-        write_voltage(1, 1.65);
+       write_voltage(1, 1.65);
+       sleep_ms(500);
+       write_voltage(1, 5);
+       sleep_ms(500);
         
-        for(int index = 0; index < 200; index++){
-            if (index < 100){
+        // for(int index = 0; index < 200; index++){
+        //     if (index < 100){
             
-            write_voltage(0, voltageA[index]);
-            write_voltage(1, voltageB[index]);
-            sleep_ms(5);
-        }
-        else {
-            write_voltage(0, voltageA[index - 100]);
-            write_voltage(1, voltageB[index]);
-            sleep_ms(5);
-        }
-        }
+        //     write_voltage(0, voltageA[index]);
+        //     write_voltage(1, voltageB[index]);
+        //     sleep_ms(5);
+        // }
+        // else {
+        //     write_voltage(0, voltageA[index - 100]);
+        //     write_voltage(1, voltageB[index]);
+        //     sleep_ms(5);
+        // }
+        // }
 
 
     }
@@ -87,14 +91,27 @@ static inline void cs_deselect(uint cs_pin) {
 // pseudo code from class:
 void write_voltage(int channel, float voltage){
     uint8_t data[2];
-    data[0] = 0b01110000; 
-    data[0] = data[0]| ((channel &0b1)<<7); // put channel in position
-    uint16_t volt_analog = voltage / 3.3 * 1023; 
+    uint16_t data_short = 0; 
 
-    data[0] = data[0] | (volt_analog >> 6); 
-    data[1] = (volt_analog<<2) & 0xFF;
+    
+    data_short = data_short| ((channel &0b1)<<15); // put channel in position
+    data_short = data_short | (0b111<<12);
+    uint16_t volt_analog = voltage; 
+    data_short = data_short | (volt_analog << 2);
+
+
+    data[0] = data_short >> 8;  
+    data[1] = data_short & 0xFF;
     // map float to uint8 3.3 to 1023
     cs_select(PIN_CS);
     spi_write_blocking(spi0, data, 2); // where data is a uint8_t array with length len
     cs_deselect(PIN_CS);
+}
+
+void setup_spi(){
+    spi_init(spi_default, 100 * 1000); // the baud, or bits per second
+    gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PIN_CS, GPIO_FUNC_SIO);
 }
