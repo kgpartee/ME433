@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-
+#include "encoder.h"
+#include "hx711.h"
 
 int main()
 {

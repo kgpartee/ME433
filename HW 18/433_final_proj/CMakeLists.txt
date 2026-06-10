@@ -35,18 +35,19 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(433_final_proj 433_final_proj.c )
+add_executable(433_final_proj 433_final_proj.c encoder.c hx711.c)
 
 pico_set_program_name(433_final_proj "433_final_proj")
 pico_set_program_version(433_final_proj "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(433_final_proj 0)
-pico_enable_stdio_usb(433_final_proj 0)
+pico_enable_stdio_usb(433_final_proj 1)
 
 # Add the standard library to the build
 target_link_libraries(433_final_proj
-        pico_stdlib)
+        pico_stdlib
+        hardware_i2c)
 
 # Add the standard include files to the build
 target_include_directories(433_final_proj PRIVATE
